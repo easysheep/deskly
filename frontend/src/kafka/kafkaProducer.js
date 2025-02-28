@@ -13,11 +13,11 @@ const producer = kafka.producer({
 
 // PostgreSQL setup
 const pgClient = new Client({
-  user: process.env.PG_USER || "postgres",
-  host: process.env.PG_HOST || "localhost",
-  database: process.env.PG_DATABASE || "DTSM",
-  password: process.env.PG_PASSWORD || "kingcrimson69",
-  port: process.env.PG_PORT || 5432,
+  user: process.env.POSTGRES_USER || "postgres",
+  host: process.env.POSTGRES_HOST || "postgres", // "postgres" is the Docker service name
+  database: process.env.POSTGRES_DB || "DTSM",
+  password: process.env.POSTGRES_PASSWORD || "kingcrimson69",
+  port: parseInt(process.env.POSTGRES_PORT || "5432", 10),
 });
 
 const LISTEN_CHANNEL = "kafka_producer"; // Channel name

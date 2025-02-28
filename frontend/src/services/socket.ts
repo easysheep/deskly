@@ -1,4 +1,4 @@
-const SOCKET_URL = 'ws://localhost:5000';  // Change to match your backend URL
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'ws://localhost:5000'; // Change to match your backend URL
 
 let socket: WebSocket | null = null;
 
