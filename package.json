@@ -1,0 +1,19 @@
+{
+  "name": "new",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start-backend\" \"npm run dev-frontend\" \"npm run kafka-producer\" \"npm run kafka-consumer\"",
+    "start-backend": "cd backend && tsc && node dist/index.js", 
+    "dev-frontend": "cd frontend && npm run dev",
+    "kafka-producer": "node frontend/src/kafka/kafkaProducer.js",
+    "kafka-consumer": "node frontend/src/kafka/kafkaConsumer.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
