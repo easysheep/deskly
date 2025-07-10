@@ -10,13 +10,34 @@ import LoadingAnimation from "@/components/LoadingAnimations";
 import toast from "react-hot-toast";
 interface UserDetails {
   id: string;
+  user_id: string;
+  org_id: string;
   username: string;
   password: string;
   role: string;
   jobtitle: string;
   createdAt: string;
+  created_at: string;
   teams: number[];
   projects: number[];
+}
+
+interface Team {
+  team_id: number;
+  team_name: string;
+  team_members: number[];
+}
+
+interface Project {
+  project_id: number;
+  project_name: string;
+}
+
+interface Task {
+  task_id: number;
+  task_name: string;
+  org_id: string;
+  assignee_id: string[];
 }
 
 const Me: React.FC = () => {
@@ -28,6 +49,9 @@ const Me: React.FC = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -36,9 +60,6 @@ const Me: React.FC = () => {
   const router = useRouter();
   const userId = localStorage.getItem("userId");
   const org_id = localStorage.getItem("orgId");
-  const [teams, setTeams] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     const fetchUser = async (userId: string | null) => {
@@ -85,15 +106,15 @@ const Me: React.FC = () => {
         const teamsData = await response.json();
 
         console.log("Fetched Teams:", teamsData);
-        console.log("User ID:", user.user_id); // Using user.user_id instead of userId
+        console.log("User ID:", user?.user_id);
 
         const filteredTeams = teamsData.filter(
-          (team) => team.team_members.includes(Number(user.user_id)) // Ensure proper comparison
+          (team: Team) => team.team_members.includes(Number(user?.user_id))
         );
 
         console.log("Filtered Teams:", filteredTeams);
         setTeams(filteredTeams);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
         setLoading(false);
       }
@@ -107,14 +128,14 @@ const Me: React.FC = () => {
         }
         const data = await response.json();
 
-        const filteredProjects = data.filter((project: any) =>
-          user.projects.includes(Number(project.project_id))
+        const filteredProjects = data.filter((project: Project) =>
+          user?.projects.includes(Number(project.project_id))
         );
 
         setProjects(filteredProjects);
         console.log("Projects:", JSON.stringify(data, null, 2));
         console.log("Filtered Projects:", filteredProjects);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       }
     };
@@ -129,17 +150,17 @@ const Me: React.FC = () => {
 
         // Step 1: Filter tasks by `org_id`
         const orgFilteredTasks = tasksData.filter(
-          (task) => task.org_id === user.org_id
+          (task: Task) => task.org_id === user?.org_id
         );
 
         // Step 2: Filter tasks where `assignee_id` includes `user.user_id`
         const assignedTasks = orgFilteredTasks.filter(
-          (task) => task.assignee_id && task.assignee_id.includes(user.user_id)
+          (task: Task) => task.assignee_id && task.assignee_id.includes(user?.user_id || '')
         );
 
         setTasks(assignedTasks);
         console.log("Filtered Tasks:", assignedTasks);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       }
     };

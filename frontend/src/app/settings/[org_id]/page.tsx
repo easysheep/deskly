@@ -25,6 +25,7 @@ import {
   CFormLabel,
   CFormSelect,
 } from "@coreui/react";
+
 interface User {
   user_id: number;
   username: string;
@@ -32,6 +33,11 @@ interface User {
   jobtitle: string;
   joindate: string;
   created_at: string;
+}
+
+interface UserDetails {
+  username: string;
+  password: string;
 }
 
 const Settings: React.FC = () => {
@@ -54,10 +60,6 @@ const Settings: React.FC = () => {
   const userId = localStorage.getItem("userId");
   const org_id = localStorage.getItem("orgId");
   const router = useRouter(); // Initialize router for redirection
-
-  //   if (loading) {
-  //     return <LoadingAnimation></LoadingAnimation>;
-  //   }
 
   useEffect(() => {
     const fetchUser = async (userId: string | null) => {
@@ -94,7 +96,7 @@ const Settings: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData((prev: Partial<UserDetails>) => ({
       ...prev,
       [name]: value,
     }));
@@ -140,7 +142,7 @@ const Settings: React.FC = () => {
     if (storedOrgName) setOrgName(storedOrgName);
   }, []);
 
-  const handleOrgNameChange = (e) => {
+  const handleOrgNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOrgName(e.target.value);
   };
 
@@ -183,15 +185,6 @@ const Settings: React.FC = () => {
       toast.error("Organization ID not found!");
       return;
     }
-
-    // const confirmation = prompt(
-    //   `Type "${orgName}" to confirm deletion of this organization.`
-    // );
-
-    // if (confirmation !== orgName) {
-    //   toast.error("Organization name does not match. Deletion cancelled.");
-    //   return;
-    // }
 
     try {
       const deletePromise = fetch(`/api/organization?id=${orgId}`, {

@@ -2,6 +2,12 @@ const { Kafka, Partitioners } = require("kafkajs");
 const { Client } = require("pg");
 
 // Kafka setup with Legacy Partitioner
+// const kafka = new Kafka({
+//   clientId: "activity-logs",
+//   brokers: [process.env.KAFKA_BROKER || "localhost:9092"], // Replace with your broker address
+// });
+
+
 const kafka = new Kafka({
   clientId: "activity-logs",
   brokers: [process.env.KAFKA_BROKER || "localhost:9092"], // Replace with your broker address

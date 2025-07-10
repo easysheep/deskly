@@ -10,6 +10,7 @@ import CIcon from "@coreui/icons-react";
 import { cilZoom } from "@coreui/icons";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { toast } from "react-hot-toast";
+
 interface Project {
   project_id: number;
   project_name: string;
@@ -42,8 +43,9 @@ const ProjectPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const projectId = typeof project_id === "string" ? project_id : "";
   const [showModal, setShowModal] = useState(false);
-  const [selectedPriority, setSelectedPriority] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedPriority, setSelectedPriority] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<number | null>(null);
 
   const [newTask, setNewTask] = useState({
     task_name: "",
@@ -53,15 +55,12 @@ const ProjectPage = () => {
     priority: "Medium",
   });
 
-  const [users, setUsers] = useState<{ user_id: number; username: string }[]>(
-    []
-  );
+  const [users, setUsers] = useState<{ user_id: number; username: string }[]>([]);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showPriorityModal, setShowPriorityModal] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
 
-  const handleChangeStatus = async (taskId, status) => {
+  const handleChangeStatus = async (taskId: number, status: string) => {
     try {
       await toast.promise(
         fetch(`/api/tasks?id=${taskId}`, {
@@ -80,7 +79,7 @@ const ProjectPage = () => {
     }
   };
 
-  const handleSetPriority = async (taskId, priority) => {
+  const handleSetPriority = async (taskId: number, priority: string) => {
     try {
       await toast.promise(
         fetch(`/api/tasks?id=${taskId}`, {
@@ -683,7 +682,7 @@ const ProjectPage = () => {
                                   </button>
                                   {showStatusModal && (
                                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                      <div className="bg-white py-2 px-3 shadow-lg w-full h-auto max-h-[90vh] w-max overflow-y-auto rounded-lg">
+                                      <div className="bg-white py-2 px-3 shadow-lg h-auto max-h-[90vh] w-max overflow-y-auto rounded-lg">
                                         <h3 className="text-2xl font-bold mb-6 text-center text-black font-poppins">
                                           Change Task Status
                                         </h3>
@@ -762,73 +761,9 @@ const ProjectPage = () => {
                                   >
                                     Set Priority
                                   </button>
-                                  {/* {showPriorityModal && (
-                                    <div className="hscreen w-max flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                      <div className="bg-white z-50 py-2 px-3 shadow-lg w-full h-auto max-h-[90vh] w-max overflow-y-auto">
-                                        <h3 className="text-2xl font-poppins mb-6 text-center text-black">
-                                          Set Task Priority
-                                        </h3>
-                                        <ul className="space-y-4">
-                                          <li
-                                            onClick={() =>
-                                              handleSetPriority(
-                                                task.task_id,
-                                                "high"
-                                              )
-                                            }
-                                            className="cursor-pointer px-4 py-2 hover:bg-gray-200 rounded font-roboto"
-                                          >
-                                            High
-                                          </li>
-                                          <li
-                                            onClick={() =>
-                                              handleSetPriority(
-                                                task.task_id,
-                                                "medium"
-                                              )
-                                            }
-                                            className="cursor-pointer px-4 py-2 hover:bg-gray-200 font-roboto rounded"
-                                          >
-                                            Medium
-                                          </li>
-                                          <li
-                                            onClick={() =>
-                                              handleSetPriority(
-                                                task.task_id,
-                                                "low"
-                                              )
-                                            }
-                                            className="cursor-pointer px-4 py-2 hover:bg-gray-200 font-roboto rounded"
-                                          >
-                                            Low
-                                          </li>
-                                        </ul>
-                                        <div className="flex justify-end mt-6">
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              setShowPriorityModal(false)
-                                            }
-                                            className="mr-2 bg-gray-300 text-[#AC46B9] hover:bg-gray-400 font-playfair px-4 py-2 rounded"
-                                          >
-                                            Cancel
-                                          </button>
-                                          <button
-                                            onClick={() =>
-                                              setShowPriorityModal(false)
-                                            }
-                                            className="bg-[#AC46B9] text-white hover:bg-purple-700 font-spaceGrotesk px-4 py-2 rounded"
-                                          >
-                                            Done
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )} */}
-
                                   {showPriorityModal && (
                                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                      <div className="bg-white py-2 px-3 shadow-lg w-full h-auto max-h-[90vh] w-max overflow-y-auto rounded-lg">
+                                      <div className="bg-white py-2 px-3 shadow-lg h-auto max-h-[90vh] w-max overflow-y-auto rounded-lg">
                                         <h3 className="text-2xl font-poppins mb-6 text-center text-black">
                                           Set Task Priority
                                         </h3>
@@ -951,7 +886,7 @@ const ProjectPage = () => {
           <div className=" w-3/12 h-[calc(100vh-56.8px)] bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-2 flex flex-col">
             {/* Project Details Section */}
             <div className="mb-2 overflow-y-auto h-2/5 bg-gray-50 rounded-lg shadow-md p-4">
-              <h2 className="text-sm font-monte text-[#B83FAA] mb-4 border-b pb-2 font-bebas">
+              <h2 className="text-sm font-monte text-[#B83FAA] mb-4 border-b pb-2">
                 Project Details
               </h2>
               {project ? (
@@ -985,6 +920,3 @@ const ProjectPage = () => {
 };
 
 export default ProjectPage;
-function fetchProjectAndTasks() {
-  throw new Error("Function not implemented.");
-}

@@ -98,7 +98,7 @@ const CreateProject: React.FC<CreateProjectProps> = ({ org_id }) => {
       {
         loading: "Creating project...",
         success: "Project created successfully!",
-        error: (err) => err.message || "Failed to create project.",
+        error: (err:any) => err.message || "Failed to create project.",
       }
     );
 

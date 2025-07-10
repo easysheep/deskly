@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
 
 // Define the type for form data
 interface FormData {

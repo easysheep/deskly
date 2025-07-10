@@ -2,9 +2,14 @@ const { Kafka } = require("kafkajs");
 
 
 // Kafka setup
+// const kafka = new Kafka({
+//   clientId: "activity-logs",
+//   brokers: [process.env.KAFKA_BROKER || "kafka:9092"], // Replace with your broker address
+// });
+
 const kafka = new Kafka({
   clientId: "activity-logs",
-  brokers: [process.env.KAFKA_BROKER || "kafka:9092"], // Replace with your broker address
+  brokers: [process.env.KAFKA_BROKER || "localhost:9092"], // Replace with your broker address
 });
 
 const consumer = kafka.consumer({ groupId: "activity-logs-group" });

@@ -35,13 +35,13 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ org_id }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const [deleteBoxVisible, setDeleteBoxVisible] = useState(null);
+  const [deleteBoxVisible, setDeleteBoxVisible] = useState<number | null>(null);
 
-  const handleThreeDotsClick = (projectId: Number) => {
+  const handleThreeDotsClick = (projectId: number) => {
     setDeleteBoxVisible((prev) => (prev === projectId ? null : projectId));
   };
 
-  const handleDeleteProject = async (projectId) => {
+  const handleDeleteProject = async (projectId: number) => {
     try {
       const response = await fetch(`/api/projects?id=${projectId}`, {
         method: "DELETE",

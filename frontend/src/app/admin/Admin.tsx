@@ -140,7 +140,7 @@ const Admin: React.FC = () => {
               </div>
 
               <form
-                className="space-y-4 bg-white bg-opacity-70 p-6 rounded-lg  mt-8 w-full max-w-lg mt-10"
+                className="space-y-4 bg-white bg-opacity-70 p-6 rounded-lg w-full max-w-lg mt-10"
                 onSubmit={handleSubmit}
               >
                 <div>
