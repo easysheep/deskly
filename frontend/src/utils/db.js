@@ -1,25 +1,14 @@
-const { Pool } = require("pg");
-
-// Database configuration
-// const pool = new Pool({
-//   user: process.env.POSTGRES_USER || "postgres",
-//   host: process.env.POSTGRES_HOST || "postgres", // Docker service name for PostgreSQL
-//   database: process.env.POSTGRES_DB || "DTSM",
-//   password: process.env.POSTGRES_PASSWORD || "kingcrimson69",
-//   port: parseInt(process.env.POSTGRES_PORT || "5432", 10),
-// });
-
-
+// src/utils/db.js
+import { Pool } from 'pg'
+console.log('> DATABASE_URL=', process.env.DATABASE_URL)
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'DTSM',
-  password: 'kingcrimson69',
-  port: 5432,
-});
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+})
 
-// Export a query function for easy use
-export const query = (text, params) => {
-  return pool.query(text, params);
-};
+pool.on('connect', () => console.log('✅ Connected to Supabase Postgres'))
+pool.on('error', err => console.error('❌ Supabase Postgres error', err))
+
+export const query = (text, params) => pool.query(text, params)
+

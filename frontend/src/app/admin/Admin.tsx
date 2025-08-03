@@ -5,7 +5,7 @@ import Link from "next/link";
 import LoadingAnimation from "@/components/LoadingAnimations";
 import "../../styles/flip-card.css";
 import CIcon from "@coreui/icons-react";
-import { cilArrowCircleLeft, cilArrowCircleRight } from "@coreui/icons";
+import { cilArrowCircleLeft} from "@coreui/icons";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 interface OrganizationFormData {

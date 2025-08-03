@@ -1,5 +1,4 @@
 "use client";
-import LoadingAnimation from "@/components/LoadingAnimations";
 import React, { useEffect, useState, useRef } from "react";
 
 interface ActivityLog {

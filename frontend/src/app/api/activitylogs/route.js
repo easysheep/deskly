@@ -31,28 +31,28 @@ export const POST = async (req) => {
     });
 
     // Insert query for `activitylogs` table
-    const result = await query(
-      `INSERT INTO activitylogs (
-          table_name, 
-          operation_type, 
-          org_id, 
-          old_data, 
-          new_data, 
-          created_at, 
-          kafka_offset, 
-          kafka_partition
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [
-        table, // Maps to table_name
-        operation, // Maps to operation_type
-        org_id, // Extracted from new_data
-        old_data, // Maps to old_data
-        new_data, // Maps to new_data
-        created_at, // Current timestamp
-        kafka_offset, // Maps to kafka_offset
-        kafka_partition, // Maps to kafka_partition
-      ]
-    );
+    // const result = await query(
+    //   `INSERT INTO activitylogs (
+    //       table_name, 
+    //       operation_type, 
+    //       org_id, 
+    //       old_data, 
+    //       new_data, 
+    //       created_at, 
+    //       kafka_offset, 
+    //       kafka_partition
+    //     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    //   [
+    //     table, // Maps to table_name
+    //     operation, // Maps to operation_type
+    //     org_id, // Extracted from new_data
+    //     old_data, // Maps to old_data
+    //     new_data, // Maps to new_data
+    //     created_at, // Current timestamp
+    //     kafka_offset, // Maps to kafka_offset
+    //     kafka_partition, // Maps to kafka_partition
+    //   ]
+    // );
 
     // Success response
     return new Response(

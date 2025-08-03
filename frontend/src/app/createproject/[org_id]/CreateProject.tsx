@@ -3,23 +3,14 @@ import ProjectsList from "@/app/projectlist/[org_id]/page";
 import React, { useState } from "react";
 import CIcon from "@coreui/icons-react";
 import { cilZoom } from "@coreui/icons";
-import { Card, Typography } from "@material-tailwind/react";
-import { UserButton, useUser } from "@clerk/nextjs";
 import {
   CButton,
   CCol,
-  CForm,
-  CFormInput,
-  CFormLabel,
-  CFormSelect,
 } from "@coreui/react";
 
 import {
-  cilChevronCircleRightAlt,
-  cilSettings,
-  cilBell,
+
   cilFilter,
-  cilOptions,
 } from "@coreui/icons";
 import { toast } from "react-hot-toast";
 interface CreateProjectProps {

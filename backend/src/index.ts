@@ -3,38 +3,50 @@ import http from "http";
 import WebSocket from "ws";
 
 const app = express();
+const port = parseInt(process.env.PORT || "5000", 10);
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
 
-// Basic route
+// HTTP test route
 app.get("/", (req, res) => {
-  res.send("WebSocket server is running");
+  res.send("WebSocket server is running. Try connecting to /ws via WebSocket.");
 });
 
-// WebSocket connection
-wss.on("connection", (ws: WebSocket) => {
+// WebSocket server without direct server binding
+const wss = new WebSocket.Server({ noServer: true });
+
+// Handle upgrade requests for /ws
+server.on("upgrade", (req, socket, head) => {
+  if (req.url === "/ws") {
+    wss.handleUpgrade(req, socket, head, (ws) => {
+      wss.emit("connection", ws, req);
+    });
+  } else {
+    socket.destroy();
+  }
+});
+
+// WebSocket logic
+wss.on("connection", (ws) => {
   console.log("Client connected");
 
-  // Listen for messages from clients
-  ws.on("message", (message: WebSocket.Data) => {
-    const parsedMessage = message.toString(); // Ensure the message is a string
-    console.log("Received:", parsedMessage);
+  ws.on("message", (message) => {
+    const parsed = message.toString();
+    console.log("Received:", parsed);
 
-    // Broadcast the message to all clients
+    // Broadcast to other clients
     wss.clients.forEach((client) => {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(parsedMessage); // Send stringified data
+        client.send(parsed);
       }
     });
   });
 
-  // Handle client disconnect
   ws.on("close", () => {
     console.log("Client disconnected");
   });
 });
 
-// Start the server on port 5000
-server.listen(5000, () => {
-  console.log("Server running at http://localhost:5000");
+// Start the server
+server.listen(port, () => {
+  console.log(`✅ Server running at http://localhost:${port}`);
 });

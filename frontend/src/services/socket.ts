@@ -1,4 +1,4 @@
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'ws://localhost:5000'; // Change to match your backend URL
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "ws://localhost:5000/ws";
 
 let socket: WebSocket | null = null;
 
@@ -11,20 +11,21 @@ export const getSocket = (): WebSocket => {
 
     // Optional: Add event listeners for debugging
     socket.onopen = () => {
-      console.log('Connected to server');
+      console.log("Connected to server");
     };
 
     socket.onclose = () => {
-      console.log('Disconnected from server');
+      console.log("Disconnected from server");
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("WebSocket error:", error);
     };
 
     socket.onmessage = (event: MessageEvent) => {
       // Convert Buffer to string if necessary
-      const message = event.data instanceof Buffer ? event.data.toString() : event.data;
+      const message =
+        event.data instanceof Buffer ? event.data.toString() : event.data;
       console.log("Received message:", message);
     };
   }
@@ -39,7 +40,7 @@ export const sendMessage = (message: string) => {
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send(message);
   } else {
-    console.error('WebSocket is not connected.');
+    console.error("WebSocket is not connected.");
   }
 };
 
@@ -50,7 +51,6 @@ export const disconnectSocket = () => {
   if (socket) {
     socket.close();
     socket = null;
-    console.log('WebSocket disconnected');
+    console.log("WebSocket disconnected");
   }
 };
-

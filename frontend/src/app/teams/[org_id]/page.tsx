@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { cilDelete, cilTrash, cilZoom } from "@coreui/icons";
+import { cilDelete,cilZoom } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import { Card, Typography } from "@material-tailwind/react";
 import LoadingAnimation from "@/components/LoadingAnimations";

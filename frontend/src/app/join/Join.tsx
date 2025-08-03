@@ -48,9 +48,6 @@ const Join: React.FC = () => {
         success: "Logged in successfully!",
         error: "Failed to log in.",
       })
-      .then((data) => {
-        // Additional success logic if needed
-      })
       .catch((err) => {
         console.error("Error during login:", err);
         setError("An unexpected error occurred");

@@ -48,7 +48,7 @@ const AddUserDashboard: React.FC = () => {
       });
 
       if (response.ok) {
-        const result = await response.json();
+        // const result = await response.json();
         setSuccessMessage("User created successfully!");
         setFormData({
           username: "",

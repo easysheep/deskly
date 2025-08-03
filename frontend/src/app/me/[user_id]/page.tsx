@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+// import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Eye, EyeOff } from "lucide-react";
 import LoadingAnimation from "@/components/LoadingAnimations";
@@ -57,7 +56,7 @@ const Me: React.FC = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const router = useRouter();
+  // const router = useRouter();
   const userId = localStorage.getItem("userId");
   const org_id = localStorage.getItem("orgId");
 

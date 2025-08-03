@@ -1,43 +1,6 @@
-// import { query } from "../../../utils/db"; // Adjust the path to your db query utility
-// import { NextResponse } from "next/server";
-
-// // Handle POST requests to save messages
-// export const POST = async (req) => {
-//   try {
-//     const { text, username, projectId, time } = await req.json();
-
-//     console.log(text, username, projectId, time);
-
-//     // Ensure all required fields are present
-//     if (!text || !username || !projectId || !time) {
-//       return NextResponse.json(
-//         { error: "Missing required fields: text, username, projectId, time" },
-//         { status: 400 }
-//       );
-//     }
-
-//     // Insert the message into the database
-//     const result = await query(
-//       `INSERT INTO messages (text, username, project_id, time)
-//        VALUES ($1, $2, $3, $4)
-//        RETURNING *`,
-//       [text, username, projectId, time]
-//     );
-
-//     const newMessage = result.rows[0];
-//     return NextResponse.json(newMessage, { status: 201 });
-//   } catch (error) {
-//     console.error("Error saving message:", error);
-//     return NextResponse.json(
-//       { error: "Failed to save message" },
-//       { status: 500 }
-//     );
-//   }
-// };
-
 import { query } from "../../../utils/db"; // Adjust the path to your db query utility
 import { NextResponse } from "next/server";
-import redis from "../../../services/redis"; // Import centralized Redis instance
+import {redis} from "../../../services/redis"; // Import centralized Redis instance
 
 const generateRedisKey = (projectId) => {
   return `messages:${projectId}`;

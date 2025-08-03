@@ -1,39 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { useRouter } from "next/navigation";
-import Chat from "@/components/Chat";
-import CIcon from "@coreui/icons-react";
-import {
-  cilZoom,
-  cilChevronCircleRightAlt,
-  cilSettings,
-  cilBell,
-  cilArrowCircleRight,
-} from "@coreui/icons";
-import { Card, Typography } from "@material-tailwind/react";
-import { UserButton, useUser } from "@clerk/nextjs";
-import LoadingAnimation from "@/components/LoadingAnimations";
-import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
-import {
-  CButton,
-  CCol,
-  CForm,
-  CFormInput,
-  CFormLabel,
-  CFormSelect,
-} from "@coreui/react";
-
-interface User {
-  user_id: number;
-  username: string;
-  role: string;
-  jobtitle: string;
-  joindate: string;
-  created_at: string;
-}
+// interface User {
+//   user_id: number;
+//   username: string;
+//   role: string;
+//   jobtitle: string;
+//   joindate: string;
+//   created_at: string;
+// }
 
 interface UserDetails {
   username: string;
@@ -49,13 +26,13 @@ const Settings: React.FC = () => {
     password: "",
   });
   const [orgName, setOrgName] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
+  // const togglePasswordVisibility = () => {
+  //   setShowPassword((prev) => !prev);
+  // };
 
   const userId = localStorage.getItem("userId");
   const org_id = localStorage.getItem("orgId");
@@ -94,47 +71,47 @@ const Settings: React.FC = () => {
     fetchUser(storedUserId);
   }, []); // Runs once on mount
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev: Partial<UserDetails>) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev: Partial<UserDetails>) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
 
-  const handleUpdate = async () => {
-    const updatePromise = new Promise(async (resolve, reject) => {
-      try {
-        const response = await fetch(`/api/check-user?id=${userId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: formData.username,
-            password: formData.password,
-          }),
-        });
+  // const handleUpdate = async () => {
+  //   const updatePromise = new Promise(async (resolve, reject) => {
+  //     try {
+  //       const response = await fetch(`/api/check-user?id=${userId}`, {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           username: formData.username,
+  //           password: formData.password,
+  //         }),
+  //       });
 
-        if (!response.ok) {
-          throw new Error("Failed to update user details");
-        }
+  //       if (!response.ok) {
+  //         throw new Error("Failed to update user details");
+  //       }
 
-        const updatedUser = await response.json();
-        setUser(updatedUser);
-        setError(null);
-        resolve("User updated successfully");
-      } catch (err: any) {
-        reject("Failed to update user");
-      }
-    });
+  //       const updatedUser = await response.json();
+  //       setUser(updatedUser);
+  //       setError(null);
+  //       resolve("User updated successfully");
+  //     } catch (err: any) {
+  //       reject("Failed to update user");
+  //     }
+  //   });
 
-    toast.promise(updatePromise, {
-      loading: "Updating user...",
-      success: "User updated successfully!",
-      error: "Failed to update user.",
-    });
-  };
+  //   toast.promise(updatePromise, {
+  //     loading: "Updating user...",
+  //     success: "User updated successfully!",
+  //     error: "Failed to update user.",
+  //   });
+  // };
 
   useEffect(() => {
     // Fetch org name from localStorage on mount
