@@ -4,12 +4,21 @@ import CIcon from "@coreui/icons-react";
 import { cilZoom, cilChevronCircleRightAlt } from "@coreui/icons";
 import { toast } from "react-hot-toast";
 
-const Chat = ({ projectId }) => {
-  const [messages, setMessages] = useState<
-    { text: string; username: string; isSent: boolean; time: string }[]
-  >([]);
+interface ChatProps {
+  projectId: string;
+}
+
+interface Message {
+  text: string;
+  username: string;
+  isSent: boolean;
+  time: string;
+}
+
+const Chat = ({ projectId }: ChatProps) => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const formatTime = () => {
     const now = new Date();
@@ -51,7 +60,7 @@ const Chat = ({ projectId }) => {
           const loggedInUsername = localStorage.getItem("username"); // Get the logged-in username
 
           // Update the fetched messages to include 'isSent' and formatted time
-          const updatedMessages = fetchedMessages.map((msg) => {
+          const updatedMessages = fetchedMessages.map((msg: any) => {
             // Convert the ISO time string to a Date object and format it
             const formattedTime = new Date(msg.time).toLocaleTimeString([], {
               hour: "2-digit",

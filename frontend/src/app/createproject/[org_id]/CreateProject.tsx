@@ -1,5 +1,5 @@
 "use client";
-import ProjectsList from "@/app/projectlist/[org_id]/page";
+import ProjectsList from "@/components/ProjectsList";
 import React, { useState } from "react";
 import CIcon from "@coreui/icons-react";
 import { cilZoom } from "@coreui/icons";

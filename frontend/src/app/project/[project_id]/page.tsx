@@ -910,7 +910,7 @@ const ProjectPage = () => {
 
             {/* Chat Section */}
             <div className="h-3/5 bg-white rounded-lg shadow-lg overflow-hidden">
-              <Chat projectId={project_id} />
+              <Chat projectId={projectId} />
             </div>
           </div>
         </div>

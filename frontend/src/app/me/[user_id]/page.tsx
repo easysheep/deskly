@@ -223,38 +223,6 @@ const Me: React.FC = () => {
       {/* Main Content */}
       <div className="flex-grow">
         <div className="h-[56.8px] px-4 py-2">
-          {/* Header Section */}
-          {/* <div className="bg-zz text-white px-4 py-2 rounded-lg shadow-md">
-            <h1 className="text-xl font-bold font-dm">User Details</h1>
-            {loading ? (
-              <LoadingAnimation />
-            ) : error ? (
-              <p className="text-red-500">{error}</p>
-            ) : (
-              <div className="mt-2 grid grid-cols-2 gap-4 font-spaceGrotesk">
-                <p className="">
-                  <span className="font-semibold mr-3">Username:</span>{" "}
-                  {user?.username}
-                </p>
-                <p>
-                  <span className="font-semibold mr-3">Job Title:</span>{" "}
-                  {user?.jobtitle || "N/A"}
-                </p>
-                <p>
-                  <span className="font-semibold mr-3">Role:</span>{" "}
-                  {user?.role || "N/A"}
-                </p>
-                <p>
-                  <span className="font-semibold mr-3">Created At:</span>{" "}
-                  {new Date(user?.created_at).toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  }) || "N/A"}
-                </p>
-              </div>
-            )}
-          </div> */}
 
           <div className="bg-zz text-white px-4 py-2 rounded-lg shadow-md">
             <h1 className="text-xl font-bold font-dm">User Details</h1>

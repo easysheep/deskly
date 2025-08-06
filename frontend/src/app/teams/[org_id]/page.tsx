@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { cilDelete,cilZoom } from "@coreui/icons";
+import { cilDelete, cilZoom } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import { Card, Typography } from "@material-tailwind/react";
 import LoadingAnimation from "@/components/LoadingAnimations";
@@ -50,7 +50,7 @@ const Teams: React.FC = () => {
   const [users, setUsers] = useState<{ user_id: number; username: string }[]>(
     []
   );
-  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("edit");
 
@@ -121,7 +121,7 @@ const Teams: React.FC = () => {
     fetchUsers();
   }, [org_id]);
 
-  const addTeam = async (e) => {
+  const addTeam = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
 
     // Construct the payload
@@ -191,7 +191,7 @@ const Teams: React.FC = () => {
         setIsModalOpen(false);
         resolve("Team updated successfully!");
       } catch (error) {
-        reject(error.message || "Error updating team.");
+        reject((error as Error).message || "Error updating team.");
       }
     });
 
@@ -203,7 +203,8 @@ const Teams: React.FC = () => {
   };
 
   // Function to add a user to the team
-  const handleAddUserToTeam = async (userId) => {
+  const handleAddUserToTeam = async (userId: number) => {
+    if (!selectedTeam) return;
     const addUserPromise = new Promise(async (resolve, reject) => {
       try {
         // Add user to the team
@@ -239,14 +240,18 @@ const Teams: React.FC = () => {
         console.log("User's teams field updated successfully:", userData);
 
         // Update local state
-        setSelectedTeam((prev) => ({
-          ...prev,
-          team_members: [...prev.team_members, userId],
-        }));
+        setSelectedTeam((prev) =>
+          prev
+            ? {
+                ...prev,
+                team_members: [...prev.team_members, userId.toString()],
+              }
+            : prev
+        );
 
         resolve("User added to the team successfully!");
       } catch (error) {
-        reject(error.message || "Error adding user to the team.");
+        reject((error as Error).message || "Error adding user to the team.");
       }
     });
 
@@ -258,7 +263,8 @@ const Teams: React.FC = () => {
   };
 
   // Function to remove a user from the team
-  const handleRemoveUserFromTeam = async (userId) => {
+  const handleRemoveUserFromTeam = async (userId: number) => {
+    if (!selectedTeam) return;
     const removeUserPromise = new Promise(async (resolve, reject) => {
       try {
         // Remove user from the team
@@ -294,14 +300,22 @@ const Teams: React.FC = () => {
         console.log("User's teams field updated successfully:", userData);
 
         // Update local state
-        setSelectedTeam((prev) => ({
-          ...prev,
-          team_members: prev.team_members.filter((id) => id !== userId),
-        }));
+        setSelectedTeam((prev) =>
+          prev
+            ? {
+                ...prev,
+                team_members: prev.team_members.filter(
+                  (id: string) => id !== userId.toString()
+                ),
+              }
+            : prev
+        );
 
         resolve("User removed from the team successfully!");
       } catch (error) {
-        reject(error.message || "Error removing user from the team.");
+        reject(
+          (error as Error).message || "Error removing user from the team."
+        );
       }
     });
 
@@ -312,15 +326,15 @@ const Teams: React.FC = () => {
     });
   };
 
-  const handleDeleteTeam = async (teamId: string) => {
-    console.log(teamId);
+  const handleDeleteTeam = async (team: Team) => {
+    console.log(team.team_id);
     try {
-      const response = await fetch(`/api/teams?id=${teamId.team_id}`, {
+      const response = await fetch(`/api/teams?id=${team.team_id}`, {
         method: "DELETE",
       });
       if (response.ok) {
         setSuccessMessage("Team deleted successfully.");
-        setTeams((prev) => prev.filter((team) => team.team_id !== teamId));
+        setTeams((prev) => prev.filter((t) => t.team_id !== team.team_id));
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.message || "Failed to delete team.");
@@ -370,7 +384,7 @@ const Teams: React.FC = () => {
               />
             </div>
             <button
-              className="ml-3 font-roboto font-bold rounded bg-slate-800 px-2.5 border border-transparent text-center text-sm text-black bg-gradient-to-r from-[#f70cc0] to-[#a10080] text-white"
+              className="ml-3 font-roboto font-bold rounded bg-slate-800 px-2.5 border border-transparent text-center text-sm text-black bg-gradient-to-r from-[#f70cc0] to-[#a10080]"
               type="button"
               onClick={() => {
                 const role = localStorage.getItem("role"); // Get role from localStorage
@@ -417,7 +431,6 @@ const Teams: React.FC = () => {
                         id="teamLead"
                         value={teamLead}
                         onChange={(e) => setTeamLead(e.target.value)}
-                        size={5} // Show 5 options at a time
                       >
                         <option value="" disabled>
                           Select a team lead
@@ -474,7 +487,13 @@ const Teams: React.FC = () => {
         </div>
 
         <div className="h-[505px] w-full">
-          <Card className="h-full w-full px-6">
+          <Card
+            variant="filled" // ← required
+            className="h-full w-full px-6"
+            placeholder="" // ← required
+            onPointerEnterCapture={() => {}} // ← required
+            onPointerLeaveCapture={() => {}} // ← required
+          >
             <div className="overflow-auto max-h-[500px]">
               <table className="w-full min-w-max table-auto text-left border-1">
                 <thead>
@@ -485,9 +504,13 @@ const Teams: React.FC = () => {
                         className="py-2 px-2 text-white align-middle"
                       >
                         <Typography
+                          as="span"
                           variant="small"
                           color="white"
+                          placeholder="" // ← required
                           className="font-bold font-spaceGrotesk text-xl leading-none pt-1"
+                          onPointerEnterCapture={() => {}} // ← required
+                          onPointerLeaveCapture={() => {}} // ← required
                         >
                           {head}
                         </Typography>
@@ -513,36 +536,51 @@ const Teams: React.FC = () => {
                         >
                           <td className={classes}>
                             <Typography
+                              as="span"
                               variant="small"
                               color="blue-gray"
+                              placeholder="" // ← required
                               className="font-bold px-2 font-robotoMono"
+                              onPointerEnterCapture={() => {}} // ← required
+                              onPointerLeaveCapture={() => {}} // ← required
                             >
                               {team.team_name}
                             </Typography>
                           </td>
                           <td className={classes}>
                             <Typography
+                              as="span"
                               variant="small"
+                              placeholder=""
                               className="font-normal text-gray-600 font-robotoMono"
+                              onPointerEnterCapture={() => {}}
+                              onPointerLeaveCapture={() => {}}
                             >
                               {team.description || "No description provided"}
                             </Typography>
                           </td>
                           <td className={classes}>
                             <Typography
+                              as="span"
                               variant="small"
+                              placeholder=""
                               className="font-normal text-gray-600 font-robotoMono"
+                              onPointerEnterCapture={() => {}}
+                              onPointerLeaveCapture={() => {}}
                             >
                               {users.find(
-                                (user) =>
-                                  user.user_id === Number(team.team_lead)
+                                (u) => u.user_id === Number(team.team_lead)
                               )?.username || "Not Assigned"}
                             </Typography>
                           </td>
                           <td className={classes}>
                             <Typography
+                              as="span"
                               variant="small"
+                              placeholder=""
                               className="font-normal text-gray-600 font-robotoMono"
+                              onPointerEnterCapture={() => {}}
+                              onPointerLeaveCapture={() => {}}
                             >
                               {new Date(team.created_at).toLocaleDateString()}
                             </Typography>
@@ -564,6 +602,7 @@ const Teams: React.FC = () => {
               </table>
             </div>
           </Card>
+
           {isModalOpen && selectedTeam && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
@@ -598,72 +637,81 @@ const Teams: React.FC = () => {
                       <label className="block text-sm font-medium">
                         Team Name
                       </label>
-                      <input
-                        type="text"
-                        value={selectedTeam.team_name}
-                        onChange={(e) =>
-                          setSelectedTeam({
-                            ...selectedTeam,
-                            team_name: e.target.value,
-                          })
-                        }
-                        className="border border-gray-300 rounded p-2 w-full"
-                      />
+                      {selectedTeam && (
+                        <input
+                          type="text"
+                          value={selectedTeam.team_name}
+                          onChange={(e) =>
+                            setSelectedTeam((prev) =>
+                              prev
+                                ? { ...prev, team_name: e.target.value }
+                                : prev
+                            )
+                          }
+                          className="border border-gray-300 rounded p-2 w-full"
+                        />
+                      )}
 
                       <label className="block text-sm font-medium">
                         Description
                       </label>
-                      <textarea
-                        value={selectedTeam.description}
-                        onChange={(e) =>
-                          setSelectedTeam({
-                            ...selectedTeam,
-                            description: e.target.value,
-                          })
-                        }
-                        className="border border-gray-300 rounded p-2 w-full"
-                      />
+                      {selectedTeam && (
+                        <textarea
+                          value={selectedTeam.description}
+                          onChange={(e) =>
+                            setSelectedTeam((prev) =>
+                              prev
+                                ? { ...prev, description: e.target.value }
+                                : prev
+                            )
+                          }
+                          className="border border-gray-300 rounded p-2 w-full"
+                        />
+                      )}
 
                       {/* List of users in the selected team */}
                       <label className="block text-sm font-medium mt-4">
                         Team Members
                       </label>
                       <ul className="mt-2 border border-gray-200 rounded p-2">
-                        {users
-                          .filter((user) =>
-                            selectedTeam.team_members.includes(user.user_id)
-                          ) // Correcting the matching field
-                          .map((user) => (
-                            <li
-                              key={user.user_id}
-                              className="flex justify-between items-center border-b py-2"
-                            >
-                              <span>{user.username}</span>
-                              <button
-                                onClick={() => {
-                                  const role = localStorage.getItem("role"); // Get role from localStorage
-                                  if (role !== "admin") {
-                                    toast.error(
-                                      <div className="text-red-500 font-bold text-center">
-                                        Access Denied! <br />
-                                        You do not have admin privileges.
-                                      </div>,
-                                      { duration: 3000 }
-                                    );
-                                    return;
-                                  }
-                                  handleRemoveUserFromTeam(user.user_id);
-                                }}
-                                className="bg-red-500 text-white px-3 py-1 rounded"
+                        {selectedTeam &&
+                          users
+                            .filter((user) =>
+                              selectedTeam.team_members.includes(
+                                user.user_id.toString()
+                              )
+                            )
+                            .map((user) => (
+                              <li
+                                key={user.user_id.toString()}
+                                className="flex justify-between items-center border-b py-2"
                               >
-                                <CIcon
-                                  customClassName="nav-icon h-[20px] cursor-pointer" // Keeping this as is
-                                  icon={cilDelete}
-                                  className="text-gray-600" // Color adjustment only
-                                />
-                              </button>
-                            </li>
-                          ))}
+                                <span>{user.username}</span>
+                                <button
+                                  onClick={() => {
+                                    const role = localStorage.getItem("role"); // Get role from localStorage
+                                    if (role !== "admin") {
+                                      toast.error(
+                                        <div className="text-red-500 font-bold text-center">
+                                          Access Denied! <br />
+                                          You do not have admin privileges.
+                                        </div>,
+                                        { duration: 3000 }
+                                      );
+                                      return;
+                                    }
+                                    handleRemoveUserFromTeam(user.user_id);
+                                  }}
+                                  className="bg-red-500 text-white px-3 py-1 rounded"
+                                >
+                                  <CIcon
+                                    customClassName="nav-icon h-[20px] cursor-pointer" // Keeping this as is
+                                    icon={cilDelete}
+                                    className="text-gray-600" // Color adjustment only
+                                  />
+                                </button>
+                              </li>
+                            ))}
                       </ul>
                     </div>
                   )}
@@ -674,44 +722,47 @@ const Teams: React.FC = () => {
                         Add Users to Team
                       </h3>
                       <div className=" px-2 max-h-60 overflow-auto">
-                        {users
-                          .filter(
-                            (user) =>
-                              !selectedTeam.team_members.includes(user.user_id)
-                          )
-                          .map((user) => (
-                            <div
-                              key={user.user_id}
-                              className="flex items-center justify-between py-1"
-                            >
-                              <span className="text-sm font-medium">
-                                {user.username}
-                              </span>
-                              <button
-                                onClick={() => {
-                                  const role = localStorage.getItem("role"); // Get role from localStorage
-                                  if (role !== "admin") {
-                                    toast.error(
-                                      <div className="text-red-500 font-bold text-center">
-                                        Access Denied! <br />
-                                        You do not have admin privileges.
-                                      </div>,
-                                      { duration: 3000 }
-                                    );
-                                    return;
-                                  }
-                                  handleAddUserToTeam(user.user_id);
-                                }}
-                                className="bg-green-500 text-white px-2 py-1 text-xs rounded"
+                        {selectedTeam &&
+                          users
+                            .filter(
+                              (user) =>
+                                !selectedTeam.team_members.includes(
+                                  user.user_id.toString()
+                                )
+                            )
+                            .map((user) => (
+                              <div
+                                key={user.user_id.toString()}
+                                className="flex items-center justify-between py-1"
                               >
-                                <CIcon
-                                  customClassName="nav-icon h-[20px] cursor-pointer" // Keeping this as is
-                                  icon={cilPlus}
-                                  className="text-gray-600" // Color adjustment only
-                                />
-                              </button>
-                            </div>
-                          ))}
+                                <span className="text-sm font-medium">
+                                  {user.username}
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    const role = localStorage.getItem("role"); // Get role from localStorage
+                                    if (role !== "admin") {
+                                      toast.error(
+                                        <div className="text-red-500 font-bold text-center">
+                                          Access Denied! <br />
+                                          You do not have admin privileges.
+                                        </div>,
+                                        { duration: 3000 }
+                                      );
+                                      return;
+                                    }
+                                    handleAddUserToTeam(user.user_id);
+                                  }}
+                                  className="bg-green-500 text-white px-2 py-1 text-xs rounded"
+                                >
+                                  <CIcon
+                                    customClassName="nav-icon h-[20px] cursor-pointer" // Keeping this as is
+                                    icon={cilPlus}
+                                    className="text-gray-600" // Color adjustment only
+                                  />
+                                </button>
+                              </div>
+                            ))}
                       </div>
                     </div>
                   )}
@@ -730,7 +781,7 @@ const Teams: React.FC = () => {
                         );
                         return;
                       }
-                      handleDeleteTeam(selectedTeam);
+                      handleDeleteTeam(selectedTeam as Team);
                     }}
                     className="bg-gray-300 text-black py-2 px-4 rounded hover:bg-red-500 hover:!text-white"
                   >
@@ -744,7 +795,7 @@ const Teams: React.FC = () => {
                   </button>
                   {selectedTab === "edit" && (
                     <button
-                      onClick={() => handleUpdate(selectedTeam)}
+                      onClick={() => handleUpdate(selectedTeam as Team)}
                       className="bg-blue-500 text-white py-2 px-4 rounded"
                     >
                       Save
