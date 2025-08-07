@@ -1,29 +1,21 @@
 const { Kafka } = require("kafkajs");
 
-
-// Kafka setup
-// const kafka = new Kafka({
-//   clientId: "activity-logs",
-//   brokers: [process.env.KAFKA_BROKER || "kafka:9092"], // Replace with your broker address
-// });
-
 const kafka = new Kafka({
   clientId: "activity-logs",
-  brokers: [process.env.KAFKA_BROKER || "localhost:9092"], // Replace with your broker address
+  brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
 });
 
 const consumer = kafka.consumer({ groupId: "activity-logs-group" });
 
-// Function to send log data to your API
 async function postLogDataToApi(logData, kafkaOffset, kafkaPartition) {
-  const apiUrl = "http://localhost:3000/api/activitylogs"; // Ensure this URL is correct
+  const apiUrl = "http://localhost:3000/api/activitylogs";
   const bodyData = {
     ...logData,
     kafka_offset: kafkaOffset,
     kafka_partition: kafkaPartition,
   };
 
-  console.log("Request body being sent to API:", JSON.stringify(bodyData, null, 2)); // Log the body data
+  console.log("Request body being sent to API:", JSON.stringify(bodyData, null, 2));
 
   try {
     const response = await fetch(apiUrl, {
@@ -34,7 +26,7 @@ async function postLogDataToApi(logData, kafkaOffset, kafkaPartition) {
       body: JSON.stringify(bodyData),
     });
 
-    const responseBody = await response.text(); // Capture raw response text for debugging
+    const responseBody = await response.text();
     console.log("Response status:", response.status);
     console.log("Response body:", responseBody);
 
@@ -48,23 +40,18 @@ async function postLogDataToApi(logData, kafkaOffset, kafkaPartition) {
   }
 }
 
-
-// Function to consume messages and send them to the API
 async function run() {
   try {
-    // Connect to Kafka
     await consumer.connect();
     console.log("Consumer connected to Kafka");
 
-    // Subscribe to the Kafka topic
     const topic = "project_activity_logs";
     await consumer.subscribe({
       topic,
-      fromBeginning: true, // Start consuming from the beginning
+      fromBeginning: true,
     });
     console.log(`Consumer subscribed to topic: ${topic}`);
 
-    // Start consuming messages
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         try {
@@ -73,7 +60,6 @@ async function run() {
           console.log(`Consumed message from Kafka:`, logData);
           console.log('function calling');
 
-          // Send the log data to the /activitylogs API route after consuming the message
           await postLogDataToApi(logData, message.offset, partition);
         } catch (err) {
           console.error("Error in eachMessage handler:", err.message);
@@ -86,7 +72,6 @@ async function run() {
     console.error(`Error starting consumer: ${err.message}`);
   }
 
-  // Graceful shutdown
   process.on("SIGINT", async () => {
     console.log("Shutting down consumer...");
     await consumer.disconnect();
@@ -95,5 +80,4 @@ async function run() {
   });
 }
 
-// Run the consumer
 run().catch(console.error);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getSocket, sendMessage, disconnectSocket } from "../services/socket"; // Adjust the import path
+import { getSocket, sendMessage, disconnectSocket } from "../services/socket";
 import CIcon from "@coreui/icons-react";
 import { cilZoom, cilChevronCircleRightAlt } from "@coreui/icons";
 import { toast } from "react-hot-toast";
@@ -25,7 +25,7 @@ const Chat = ({ projectId }: ChatProps) => {
     const hours = now.getHours();
     const minutes = now.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
-    const formattedHours = hours % 12 || 12; // Convert 24-hour time to 12-hour time
+    const formattedHours = hours % 12 || 12;
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
     return `${formattedHours}:${formattedMinutes} ${ampm}`;
   };
@@ -33,35 +33,29 @@ const Chat = ({ projectId }: ChatProps) => {
   useEffect(() => {
     const socket = getSocket();
 
-    // Listen for messages from the WebSocket server
     socket.onmessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data);
       setMessages((prev) => [
         ...prev,
-        { ...message, isSent: false, time: formatTime() }, // Add received message with time
+        { ...message, isSent: false, time: formatTime() },
       ]);
     };
 
-    // Cleanup on component unmount
     return () => {
-      disconnectSocket(); // Close the WebSocket connection when the component is removed
+      disconnectSocket();
     };
   }, []);
-
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        // Fetch messages from the backend
         const response = await fetch(`/api/messages?projectId=${projectId}`);
 
         if (response.ok) {
           const fetchedMessages = await response.json();
-          const loggedInUsername = localStorage.getItem("username"); // Get the logged-in username
+          const loggedInUsername = localStorage.getItem("username");
 
-          // Update the fetched messages to include 'isSent' and formatted time
           const updatedMessages = fetchedMessages.map((msg: any) => {
-            // Convert the ISO time string to a Date object and format it
             const formattedTime = new Date(msg.time).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
@@ -70,12 +64,12 @@ const Chat = ({ projectId }: ChatProps) => {
 
             return {
               ...msg,
-              isSent: msg.username === loggedInUsername, // Set isSent based on username match
-              time: formattedTime, // Update time to be in the desired format
+              isSent: msg.username === loggedInUsername,
+              time: formattedTime,
             };
           });
 
-          setMessages(updatedMessages); // Set the updated messages with formatted time
+          setMessages(updatedMessages);
         } else {
           console.error("Failed to fetch messages from backend.");
         }
@@ -88,16 +82,13 @@ const Chat = ({ projectId }: ChatProps) => {
   }, [projectId]);
 
   const handleSendMessage = async () => {
-    const username = localStorage.getItem("username") || "Anonymous"; // Get username from localStorage
-    const message = { text: input, username, isSent: true, time: formatTime() }; // Add time and isSent to message
+    const username = localStorage.getItem("username") || "Anonymous";
+    const message = { text: input, username, isSent: true, time: formatTime() };
 
-    // Send the message via WebSocket
-    sendMessage(JSON.stringify(message)); // This keeps the isSent property for local differentiation
+    sendMessage(JSON.stringify(message));
 
-    // Update local state with the message
     setMessages((prev) => [...prev, message]);
 
-    // Prepare the message for backend (exclude isSent)
     const backendMessage = {
       text: input,
       username,
@@ -105,7 +96,6 @@ const Chat = ({ projectId }: ChatProps) => {
       projectId,
     };
 
-    // Send message to the backend
     try {
       const response = await fetch("/api/messages", {
         method: "POST",
@@ -125,10 +115,9 @@ const Chat = ({ projectId }: ChatProps) => {
       console.error("Error sending message:", error);
     }
 
-    setInput(""); // Clear the input field
+    setInput("");
   };
 
-  // Handle "Enter" key press to send the message
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && input.trim() !== "") {
       handleSendMessage();
@@ -141,7 +130,7 @@ const Chat = ({ projectId }: ChatProps) => {
     }
   }, [messages]);
 
-  const userRole = localStorage.getItem("role"); // Get role from localStorage
+  const userRole = localStorage.getItem("role");
 
   const isAuthorized = userRole === "admin" || userRole === "employee";
 
@@ -157,14 +146,12 @@ const Chat = ({ projectId }: ChatProps) => {
 
   return (
     <div className="h-full flex flex-col bg-white rounded-lg shadow-lg">
-      {/* Header Section */}
       <div className="bg-white px-3 py-1 border-b border-gray-300 sticky top-0 z-10">
         <h2 className="text-lg font-semibold text-gray-800 font-playfair">
           Project Chat
         </h2>
       </div>
 
-      {/* Messages Section */}
       <div className="flex-1 max-h-[80vh] overflow-y-auto p-4 bg-gray-50 rounded-t-lg">
         <ul className="space-y-4">
           {messages.map((msg, index) => (
@@ -179,7 +166,6 @@ const Chat = ({ projectId }: ChatProps) => {
                   msg.isSent ? "bg-zz text-white" : "bg-[#FFEDFB] text-black"
                 }`}
               >
-                {/* Message Header */}
                 {!msg.isSent && (
                   <p className="font-semibold text-xs text-gray-500 mb-1">
                     {msg.username} • {msg.time}
@@ -190,7 +176,6 @@ const Chat = ({ projectId }: ChatProps) => {
                     {msg.time}
                   </p>
                 )}
-                {/* Message Text */}
                 <p className="text-sm">{msg.text}</p>
               </div>
             </li>
@@ -199,7 +184,6 @@ const Chat = ({ projectId }: ChatProps) => {
         </ul>
       </div>
 
-      {/* Input Section */}
       <div className="p-2 bg-white border-t flex space-x-2 rounded-b-lg">
         <input
           type="text"
@@ -208,7 +192,7 @@ const Chat = ({ projectId }: ChatProps) => {
           onKeyDown={isAuthorized ? handleKeyDown : handleUnauthorizedAction}
           placeholder="Type a message"
           className="text-black flex-1 p-2 text-sm border border-gray-900 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          disabled={!isAuthorized} // Disable input if not authorized
+          disabled={!isAuthorized}
         />
         <button
           onClick={isAuthorized ? handleSendMessage : handleUnauthorizedAction}
@@ -217,7 +201,7 @@ const Chat = ({ projectId }: ChatProps) => {
               ? "bg-zz text-white hover:bg-black"
               : "bg-gray-400 text-gray-600 cursor-not-allowed"
           }`}
-          disabled={!isAuthorized} // Disable button if not authorized
+          disabled={!isAuthorized}
         >
           <CIcon icon={cilChevronCircleRightAlt} className="text-white" />
         </button>

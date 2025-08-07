@@ -10,28 +10,27 @@ interface ClientAuthWrapperProps {
 export default function ClientAuthWrapper({ children }: ClientAuthWrapperProps) {
   const pathname = usePathname();
 
-  // Define paths where the UserButton should be displayed
   const userButtonPaths: string[] = ["/"];
 
-  // Determine if the current path is public and does not need authentication
+
   const isWallOfTrust = pathname === "/" || pathname.startsWith("/walloftrust");
 
   return (
     <>
       {isWallOfTrust ? (
-        children // Directly render children if the route is public
+        children 
       ) : (
         <>
-          {/* SignedIn: Content shown when user is authenticated */}
+      
           <SignedIn>
-            {/* Only show UserButton if current path is in userButtonPaths */}
+  
             {userButtonPaths.includes(pathname) ? (
               <UserButton afterSignOutUrl="/" />
             ) : null}
             {children}
           </SignedIn>
 
-          {/* SignedOut: Content shown when user is not authenticated */}
+
           <SignedOut>
             <div className="flex flex-col items-center justify-center min-h-screen bg-black text-center p-4">
               <h1 className="text-2xl font-semibold text-white">

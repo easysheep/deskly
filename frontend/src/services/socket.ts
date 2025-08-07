@@ -2,14 +2,12 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "ws://localhost:5000/ws
 
 let socket: WebSocket | null = null;
 
-/**
- * Initializes and returns the WebSocket client instance.
- */
+
 export const getSocket = (): WebSocket => {
   if (!socket) {
     socket = new WebSocket(SOCKET_URL);
 
-    // Optional: Add event listeners for debugging
+  
     socket.onopen = () => {
       console.log("Connected to server");
     };
@@ -23,7 +21,7 @@ export const getSocket = (): WebSocket => {
     };
 
     socket.onmessage = (event: MessageEvent) => {
-      // Convert Buffer to string if necessary
+  
       const message =
         event.data instanceof Buffer ? event.data.toString() : event.data;
       console.log("Received message:", message);
@@ -33,9 +31,6 @@ export const getSocket = (): WebSocket => {
   return socket;
 };
 
-/**
- * Sends a message to the WebSocket server.
- */
 export const sendMessage = (message: string) => {
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send(message);
@@ -44,9 +39,7 @@ export const sendMessage = (message: string) => {
   }
 };
 
-/**
- * Disconnects the WebSocket client.
- */
+
 export const disconnectSocket = () => {
   if (socket) {
     socket.close();
