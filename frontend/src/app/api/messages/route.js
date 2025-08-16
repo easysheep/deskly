@@ -67,7 +67,14 @@ export const GET = async (req) => {
       console.log(`Data found in Redis for projectId: ${projectId}`);
 
       // Parse Redis messages and return them
-      const parsedMessages = cachedMessages.map((msg) => JSON.parse(msg));
+      const parsedMessages = cachedMessages.map((msg) => {
+        try {
+          return typeof msg === "string" ? JSON.parse(msg) : msg;
+        } catch (err) {
+          console.error("Redis message parse failed:", msg, err);
+          return msg; // fallback so it won't crash
+        }
+      });
       return NextResponse.json(parsedMessages, { status: 200 });
     }
 

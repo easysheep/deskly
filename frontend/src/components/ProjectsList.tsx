@@ -97,10 +97,49 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ org_id }) => {
       : 0;
   };
 
-  const timeSince = (date: string): string => {
-    const now = new Date();
-    const createdDate = new Date(date);
-    const diffInSeconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
+  const timeSince = (dateStr: string): string => {
+    // Stronger normalizer that truncates microseconds to milliseconds and appends 'Z' when appropriate.
+    const normalizeToISO = (s: string) => {
+      if (!s) return s;
+  
+      s = s.trim();
+  
+      // If it already ends with timezone info (Z or ±hh:mm), return as-is
+      if (/[+-]\d{2}:\d{2}$|Z$/.test(s)) return s;
+  
+      // Replace space with T if present (common DB format)
+      let iso = s.replace(' ', 'T');
+  
+      // If fraction part has more than 3 digits (microseconds), truncate to 3 digits (milliseconds)
+      // e.g. 15:02:58.627036 -> 15:02:58.627
+      iso = iso.replace(/(\.\d{3})\d+/, '$1');
+  
+      // If we now match an ISO-like timestamp without timezone, append Z (assume UTC)
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(iso)) {
+        return iso + 'Z';
+      }
+  
+      // fallback (return original)
+      return s;
+    };
+  
+    // Debug - remove these console logs once confirmed working
+    try {
+      console.log('[timeSince] raw:', dateStr);
+      const normalized = normalizeToISO(dateStr);
+      console.log('[timeSince] normalized:', normalized);
+  
+      const parsed = new Date(normalized);
+      console.log('[timeSince] parsed.toString():', parsed.toString());
+      console.log('[timeSince] parsed.toISOString():', isNaN(parsed.getTime()) ? 'Invalid Date' : parsed.toISOString());
+    } catch (e) {
+      console.warn('[timeSince] parse debug error', e);
+    }
+  
+    const createdDate = new Date(normalizeToISO(dateStr));
+    if (isNaN(createdDate.getTime())) return "Unknown time";
+  
+    const diffInSeconds = Math.max(0, Math.floor((Date.now() - createdDate.getTime()) / 1000));
     const intervals = [
       { label: "year", seconds: 31536000 },
       { label: "month", seconds: 2592000 },
@@ -110,12 +149,13 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ org_id }) => {
       { label: "minute", seconds: 60 },
       { label: "second", seconds: 1 },
     ];
-    for (const interval of intervals) {
-      const count = Math.floor(diffInSeconds / interval.seconds);
-      if (count > 0) return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+    for (const { label, seconds } of intervals) {
+      const count = Math.floor(diffInSeconds / seconds);
+      if (count > 0) return `${count} ${label}${count > 1 ? "s" : ""} ago`;
     }
     return "Just now";
   };
+  
 
   if (loading) return <div className="flex justify-center items-center h-96"><div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-800"></div></div>;
   if (error) return <p className="text-red-500">{error}</p>;

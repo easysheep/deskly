@@ -106,12 +106,13 @@ export const POST = async (req) => {
     // Insert the new user into the "user" table
     const insertResult = await query(
       `INSERT INTO "user" 
-        (user_id, username, password, role, teams, projects, created_at, updated_at, org_id,jobtitle)
+        (username, password, role, teams, projects, created_at, updated_at, org_id, jobtitle)
        VALUES 
-        ($1, $2, $3, $4, ARRAY[]::INTEGER[], ARRAY[]::INTEGER[], NOW(), NOW(), $5, $6) 
+        ($1, $2, $3, ARRAY[]::INTEGER[], ARRAY[]::INTEGER[], NOW(), NOW(), $4, $5)
        RETURNING *`,
-      [newUserId, username, password, role, org_id, jobtitle]
+      [username, password, role, org_id, jobtitle]
     );
+    
 
     // Return the created user data
     return NextResponse.json(insertResult.rows[0], { status: 201 });

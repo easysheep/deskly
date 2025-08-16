@@ -132,7 +132,7 @@ const Chat = ({ projectId }: ChatProps) => {
 
   const userRole = localStorage.getItem("role");
 
-  const isAuthorized = userRole === "admin" || userRole === "employee";
+  const isAuthorized = userRole === "admin" || userRole === "Employee" || userRole==="Manager";
 
   const handleUnauthorizedAction = () => {
     toast.error(

@@ -142,7 +142,7 @@ const Members: React.FC = () => {
               }}
             >Add Members</button>
             {showPopup && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded shadow w-[400px]">
                   <CForm onSubmit={addUser}>
                     <CCol className="mb-3">
@@ -168,7 +168,7 @@ const Members: React.FC = () => {
                     </CCol>
                     <CCol className="flex justify-end space-x-2 mt-3">
                       <CButton color="secondary" onClick={() => setShowPopup(false)}>Cancel</CButton>
-                      <CButton color="primary" type="submit">Add User</CButton>
+                      <CButton type="submit" className="text-white bg-gradient-to-r from-[#f70cc0] to-[#a10080]">Add User</CButton>
                     </CCol>
                   </CForm>
                 </div>
@@ -204,11 +204,11 @@ const Members: React.FC = () => {
                 </thead>
                 <tbody>
                   {error || members.length === 0 ? (
-                    <tr><td colSpan={4} className="py-4 text-center text-gray-500">{error ? 'Error loading members' : 'No members yet'}</td></tr>
+                    <tr><td colSpan={4} className="py-4  text-center text-gray-500">{error ? 'Error loading members' : 'No members yet'}</td></tr>
                   ) : (
                     members.map(member => (
-                      <tr key={member.user_id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleRowClick(member.user_id)}>
-                        <td className="py-4"><span className="font-bold">{member.name}</span></td>
+                      <tr key={member.user_id} className="hover:bg-gray-50 cursor-pointer " onClick={() => handleRowClick(member.user_id)}>
+                        <td className="py-4 px-2"><span className="font-bold">{member.name}</span></td>
                         <td className="py-4">{member.role}</td>
                         <td className="py-4">{member.jobtitle}</td>
                         <td className="py-4">{member.joindate}</td>

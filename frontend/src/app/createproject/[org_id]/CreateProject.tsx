@@ -135,7 +135,7 @@ const CreateProject: React.FC<CreateProjectProps> = ({ org_id }) => {
             type="button"
             onClick={() => {
               const role = localStorage.getItem("role"); // Get role from localStorage
-              if (role !== "admin") {
+              if (role !== "admin" && role!="Manager") {
                 toast.error(
                   <div className="text-red-500 font-bold text-center">
                     Access Denied! <br />

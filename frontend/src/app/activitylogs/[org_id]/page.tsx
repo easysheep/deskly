@@ -147,7 +147,7 @@ const ActivityLogs: React.FC = () => {
     );
   if (logs.length === 0)
     return (
-      <p className="text-center text-gray-500 mt-4">
+      <p className="text-center text-gray-500 mt-4 bg-white">
         No activity logs currently
       </p>
     );

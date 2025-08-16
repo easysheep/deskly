@@ -509,7 +509,7 @@ const ProjectPage = () => {
                         >
                           Cancel
                         </button>
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="btn bg-gradient-to-r from-[#f70cc0] to-[#a10080] text-white">
                           Add Task
                         </button>
                       </div>
@@ -580,7 +580,7 @@ const ProjectPage = () => {
                                   <button
                                     onClick={() => {
                                       const role = localStorage.getItem("role"); // Get role from localStorage
-                                      if (role !== "admin") {
+                                      if (role !== "admin" && role!="Manager") {
                                         toast.error(
                                           <div className="text-red-500 font-bold text-center">
                                             Access Denied! <br />
@@ -661,14 +661,12 @@ const ProjectPage = () => {
                                     onClick={() => {
                                       const role = localStorage.getItem("role"); // Get role from localStorage
                                       if (
-                                        role !== "admin" &&
-                                        role !== "employee"
+                                        role !== "Manager" &&
+                                        role !== "admin" 
                                       ) {
                                         toast.error(
                                           <div className="text-red-500 font-bold text-center">
-                                            Access Denied! <br />
-                                            Only Admins and Employees can change
-                                            status.
+                                            Access Denied!
                                           </div>,
                                           { duration: 3000 }
                                         );
@@ -742,14 +740,12 @@ const ProjectPage = () => {
                                     onClick={() => {
                                       const role = localStorage.getItem("role"); // Get role from localStorage
                                       if (
-                                        role !== "admin" &&
-                                        role !== "employee"
+                                        role !== "Manager" &&
+                                        role !== "admin"
                                       ) {
                                         toast.error(
                                           <div className="text-red-500 font-bold text-center">
-                                            Access Denied! <br />
-                                            Only Admins and Employees can set
-                                            priority.
+                                            Access Denied!
                                           </div>,
                                           { duration: 3000 }
                                         );

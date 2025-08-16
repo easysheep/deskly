@@ -384,15 +384,15 @@ const Teams: React.FC = () => {
               />
             </div>
             <button
-              className="ml-3 font-roboto font-bold rounded bg-slate-800 px-2.5 border border-transparent text-center text-sm text-black bg-gradient-to-r from-[#f70cc0] to-[#a10080]"
+              className="ml-3 font-roboto font-bold rounded bg-slate-800 px-2.5 border border-transparent text-center text-sm text-white bg-gradient-to-r from-[#f70cc0] to-[#a10080]"
               type="button"
               onClick={() => {
                 const role = localStorage.getItem("role"); // Get role from localStorage
                 if (role !== "admin") {
                   toast.error(
                     <div className="text-red-500 font-bold text-center">
-                      Access Denied! <br />
-                      You do not have admin privileges.
+                      Access Denied: Admins only
+                      
                     </div>,
                     { duration: 3000 }
                   );
@@ -451,7 +451,7 @@ const Teams: React.FC = () => {
                       >
                         Cancel
                       </CButton>
-                      <CButton color="primary" type="submit">
+                      <CButton type="submit" className="bg-gradient-to-r from-[#f70cc0] to-[#a10080] text-white">
                         Add Team
                       </CButton>
                     </CCol>
@@ -770,6 +770,7 @@ const Teams: React.FC = () => {
                 <div className="flex justify-end space-x-2 mt-4">
                   <button
                     onClick={() => {
+                      
                       const role = localStorage.getItem("role"); // Get role from localStorage
                       if (role !== "admin") {
                         toast.error(
@@ -782,6 +783,7 @@ const Teams: React.FC = () => {
                         return;
                       }
                       handleDeleteTeam(selectedTeam as Team);
+                      handleCloseModal();
                     }}
                     className="bg-gray-300 text-black py-2 px-4 rounded hover:bg-red-500 hover:!text-white"
                   >
